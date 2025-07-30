@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model admin {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String
+  password Int
+  image    String
+  role     roles    @default(admin)
+  createAt DateTime @default(now())
+}
+
+model debtor {
+  id                Int                 @id @default(autoincrement())
+  name              String
+  phoneNumber       String
+  address           String
+  note              String
+  seller            seller              @relation(fields: [sellerId], references: [id])
+  sellerId          Int
+  role              roles               @default(debtor)
+  createAt          DateTime            @default(now())
+  borrowedProduct   borrowedProduct[]
+  paymentHistory    paymentHistory[]
+  debtroPhoneNumber debtroPhoneNumber[]
+  message           message[]
+  payment           payment[]
+}
+
+model seller {
+  id            Int             @id @default(autoincrement())
+  name          String
+  password      String
+  phoneNumber   String
+  email         String
+  wallet        Int
+  image         String
+  status        Boolean         @default(false)
+  debtor        debtor[]
+  role          roles           @default(seller)
+  createAt      DateTime        @default(now())
+  feedback      feedback[]
+  message       message[]
+  messageSample messageSample[]
+}
+
+// person section end
+
+model feedback {
+  id       Int      @id @default(autoincrement())
+  message  String
+  seller   seller   @relation(fields: [sellerId], references: [id])
+  sellerId Int
+  createAt DateTime @default(now())
+}
+
+model borrowedProduct {
+  id                   Int                    @id @default(autoincrement())
+  productName          String
+  term                 DateTime
+  totalAmount          Int
+  note                 String
+  debtor               debtor                 @relation(fields: [debtorId], references: [id])
+  debtorId             Int
+  createAt             DateTime               @default(now())
+  borrowedProductImage borrowedProductImage[]
+  payment              payment[]
+}
+
+model paymentHistory {
+  id       Int      @id @default(autoincrement())
+  debtor   debtor   @relation(fields: [debtorId], references: [id])
+  amount   Int
+  debtorId Int
+  createAt DateTime @default(now())
+}
+
+model debtroPhoneNumber {
+  id       Int      @id @default(autoincrement())
+  debtor   debtor   @relation(fields: [debtorId], references: [id])
+  number   String
+  debtorId Int
+  createAt DateTime @default(now())
+}
+
+model borrowedProductImage {
+  id                Int             @id @default(autoincrement())
+  image             String
+  borrowedProduct   borrowedProduct @relation(fields: [borrowedProductId], references: [id])
+  borrowedProductId Int
+  createAt          DateTime        @default(now())
+}
+
+model message {
+  id       Int      @id @default(autoincrement())
+  from     seller   @relation(fields: [sellerId], references: [id])
+  to       debtor   @relation(fields: [debtorId], references: [id])
+  message  String
+  sent     Boolean  @default(false)
+  sellerId Int
+  debtorId Int
+  createAt DateTime @default(now())
+}
+
+model payment {
+  id                Int             @id @default(autoincrement())
+  debtor            debtor          @relation(fields: [debtorId], references: [id])
+  borrowedProduct   borrowedProduct @relation(fields: [borrowedProductId], references: [id])
+  amount            Int
+  debtorId          Int
+  borrowedProductId Int
+  createAt          DateTime        @default(now())
+}
+
+model messageSample {
+  id       Int      @id @default(autoincrement())
+  message  String
+  seller   seller   @relation(fields: [sellerId], references: [id])
+  sellerId Int
+  createAt DateTime @default(now())
+}
+
+// ------------------------------------------------- enums
+
+enum roles {
+  admin
+  debtor
+  seller
+}
