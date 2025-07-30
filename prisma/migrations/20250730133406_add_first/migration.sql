@@ -6,7 +6,7 @@ CREATE TABLE "public"."admin" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "password" INTEGER NOT NULL,
+    "password" TEXT NOT NULL,
     "image" TEXT NOT NULL,
     "role" "public"."roles" NOT NULL DEFAULT 'admin',
     "createAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -129,6 +129,9 @@ CREATE TABLE "public"."messageSample" (
 
     CONSTRAINT "messageSample_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "admin_email_key" ON "public"."admin"("email");
 
 -- AddForeignKey
 ALTER TABLE "public"."debtor" ADD CONSTRAINT "debtor_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "public"."seller"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

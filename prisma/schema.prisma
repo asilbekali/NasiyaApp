@@ -16,8 +16,8 @@ datasource db {
 model admin {
   id       Int      @id @default(autoincrement())
   name     String
-  email    String
-  password Int
+  email    String   @unique
+  password String
   image    String
   role     roles    @default(admin)
   createAt DateTime @default(now())

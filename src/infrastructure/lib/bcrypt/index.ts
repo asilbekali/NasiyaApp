@@ -14,6 +14,8 @@ export class BcryptEncryption {
 
   static async compare(password: string, hash: string) {
     try {
+      const a = await bcrypt.compare(password, hash);
+
       return await bcrypt.compare(password, hash);
     } catch (error) {
       throw new BadRequestException(`Error on decrypt: ${error}`);
