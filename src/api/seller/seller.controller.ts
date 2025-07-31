@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { SellerService } from './seller.service';
 import { CreateSellerDto } from './dto/create-seller.dto';
@@ -23,7 +24,7 @@ export class SellerController {
   @RoleDec(Role.SELLER)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
-  @Post()
+  @Post('login')
   login(@Body() createSellerDto: CreateSellerDto) {
     return this.sellerService.login(createSellerDto);
   }
@@ -40,8 +41,20 @@ export class SellerController {
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.sellerService.findAll();
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('name') name?: string,
+    @Query('status') status?: boolean,
+  ) {
+    const parsedStatus = status !== undefined ? status === true : undefined;
+
+    return this.sellerService.findAll({
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : 10,
+      name,
+      status: parsedStatus,
+    });
   }
 
   @RoleDec(Role.ADMIN)
