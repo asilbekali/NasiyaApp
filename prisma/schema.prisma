@@ -51,10 +51,10 @@ model seller {
   status        Boolean         @default(false)
   debtor        debtor[]
   role          roles           @default(seller)
-  createAt      DateTime        @default(now())
   feedback      feedback[]
   message       message[]
   messageSample messageSample[]
+  createAt      DateTime        @default(now())
 }
 
 // person section end

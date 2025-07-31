@@ -68,19 +68,21 @@ export class AdminService {
     };
   }
 
-  findAll() {
-    return `This action returns all admin`;
-  }
+  async remove(id: number) {
+    const existingAdmin = await this.prisma.admin.findUnique({
+      where: { id },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} admin`;
-  }
+    if (!existingAdmin) {
+      throw new BadRequestException(`ID raqami ${id} bo'lgan admin topilmadi`);
+    }
 
-  update(id: number, updateAdminDto: UpdateAdminDto) {
-    return `This action updates a #${id} admin`;
-  }
+    await this.prisma.admin.delete({
+      where: { id },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} admin`;
+    return {
+      message: `ID raqami ${id} bo'lgan admin muvaffaqiyatli o'chirildi`,
+    };
   }
 }
