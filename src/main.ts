@@ -14,12 +14,12 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
-    .setTitle('INDEX example')
-    .setDescription('The INDEX API description')
+    .setTitle('Nasiya App example')
+    .setDescription('The Nasiya App API description')
     .setVersion('1.0')
     .addBearerAuth()
     .addSecurityRequirements('bearer', ['bearer'])
-    .addTag('INDEX')
+    .addTag('Nasiya App')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

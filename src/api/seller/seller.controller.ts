@@ -16,17 +16,16 @@ import { AuthGuard } from 'src/common/Guards/auth.guard';
 import { RolesGuard } from 'src/common/Guards/roles.guard';
 import { RoleDec } from 'src/common/decoratos/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
+import { LoginSellerDto } from './dto/login-seller.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('seller')
 export class SellerController {
   constructor(private readonly sellerService: SellerService) {}
 
-  @RoleDec(Role.SELLER)
-  @UseGuards(RolesGuard)
-  @UseGuards(AuthGuard)
   @Post('login')
-  login(@Body() createSellerDto: CreateSellerDto) {
-    return this.sellerService.login(createSellerDto);
+  login(@Body() loginDto: LoginSellerDto) {
+    return this.sellerService.login(loginDto);
   }
 
   @RoleDec(Role.ADMIN)
@@ -36,11 +35,34 @@ export class SellerController {
   create(@Body() createSellerDto: CreateSellerDto) {
     return this.sellerService.create(createSellerDto);
   }
-
   @RoleDec(Role.ADMIN)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Get()
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page',
+  })
+  @ApiQuery({
+    name: 'name',
+    required: false,
+    type: String,
+    description: 'Filter by name',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    type: Boolean,
+    description: 'Filter by status',
+  })
   findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -56,7 +78,6 @@ export class SellerController {
       status: parsedStatus,
     });
   }
-
   @RoleDec(Role.ADMIN)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)

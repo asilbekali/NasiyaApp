@@ -3,6 +3,7 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import { CreateSellerDto } from './dto/create-seller.dto';
 import { UpdateSellerDto } from './dto/update-seller.dto';
 import { JwtService } from '@nestjs/jwt';
+import { LoginSellerDto } from './dto/login-seller.dto';
 
 @Injectable()
 export class SellerService {
@@ -12,12 +13,20 @@ export class SellerService {
   ) {}
 
   async create(createSellerDto: CreateSellerDto) {
-    const existingSeller = await this.prisma.seller.findFirst({
+    const existingEmail = await this.prisma.seller.findFirst({
       where: { email: createSellerDto.email },
     });
 
-    if (existingSeller) {
+    if (existingEmail) {
       throw new NotFoundException('This email is already registered');
+    }
+
+    const existingName = await this.prisma.seller.findFirst({
+      where: { name: createSellerDto.name },
+    });
+
+    if (existingName) {
+      throw new NotFoundException('This name is already taken');
     }
 
     const newSeller = await this.prisma.seller.create({
@@ -38,13 +47,13 @@ export class SellerService {
     };
   }
 
-  async login(createSellerDto: CreateSellerDto) {
+  async login(loginDto: LoginSellerDto) {
     const seller = await this.prisma.seller.findFirst({
-      where: { phoneNumber: createSellerDto.phoneNumber },
+      where: { name: loginDto.name },
     });
 
-    if (!seller || seller.password !== createSellerDto.password) {
-      throw new NotFoundException('Invalid phone number or password');
+    if (!seller || seller.password !== loginDto.password) {
+      throw new NotFoundException('Invalid name or password');
     }
 
     const payload = { sub: seller.id, role: seller.role };
@@ -52,7 +61,7 @@ export class SellerService {
 
     return {
       message: 'Login successful',
-      token,
+      accesToken: token,
     };
   }
 
