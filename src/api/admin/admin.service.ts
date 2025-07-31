@@ -12,8 +12,10 @@ import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class AdminService {
-  private readonly jwt: JwtService;
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwt: JwtService,
+  ) {}
 
   async register(createAdminDto: CreateAdminDto) {
     const { email, password, name, image } = createAdminDto;
@@ -58,7 +60,7 @@ export class AdminService {
     if (!isMatch) throw new UnauthorizedException('Email yoki parol noto‘g‘ri');
 
     const payload = { sub: admin.id, email: admin.email, role: admin.role };
-    const token = await this.jwt.signAsync(payload);
+    const token = await this.jwt.sign(payload);
 
     return {
       message: 'Muvaffaqiyatli tizimga kirildi',
