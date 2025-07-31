@@ -1,98 +1,67 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🛍️ Nasiya for Shops
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+**Nasiya for Shops** – bu do‘kon egalari va mijozlar o‘rtasida nasiya asosida savdo qilishni avtomatlashtiruvchi zamonaviy raqamli tizimdir. Loyihamiz Figma dizayniga asoslangan bo‘lib, foydalanuvchilarga qulay interfeys va samarali boshqaruv imkoniyatlarini taqdim etadi.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📐 Dizayn
 
-## Description
+Figma dizayn maketi:  
+👉 [Figma – Nasiya for Shops](https://www.figma.com/design/SYeH48iDubUrWvw1U5VIY6/Nasiya-for-Shops--Copy-?node-id=0-1&p=f&t=0s99Pato3XPsTPoB-0)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📦 Texnologiyalar
 
-## Project setup
+Frontend:
+- React.js (yoki boshqa framework – loyiha talabiga qarab)
+- Tailwind CSS / SCSS
+- Axios – API so‘rovlar uchun
 
-```bash
-$ yarn install
-```
+Backend:
+- Node.js + Express / NestJS
+- PostgreSQL / MySQL
+- Prisma / Sequelize ORM
+- JWT Authentication
+- RBAC (Role Based Access Control)
 
-## Compile and run the project
+## 🔑 Asosiy imkoniyatlar
 
-```bash
-# development
-$ yarn run start
+- 🔐 Ro‘yxatdan o‘tish va tizimga kirish (login/signup)
+- 📋 Xaridorlar ro‘yxatini yuritish
+- 💵 Nasiya miqdorini boshqarish
+- 🧾 To‘lovlar tarixini ko‘rish
+- 📊 Statistika va hisobotlar
+- 📁 Mahsulotlar va xizmatlar boshqaruvi
+- 📤 Rasm yuklash va profilni tahrirlash
 
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
-```
-
-## Run tests
+## 🚀 O‘rnatish (local development)
 
 ```bash
-# unit tests
-$ yarn run test
+git clone [https://github.com/username/nasiya-for-shops.git](https://github.com/asilbekali/NasiyaApp.git)
+cd nasiya-for-shops
+yarn install
+yarn dev
+Eslatma: .env fayliga kerakli konfiguratsiyalarni qo‘shishni unutmang.
 
-# e2e tests
-$ yarn run test:e2e
+🧠 Hissa qo‘shish
+Hissa qo‘shmoqchi bo‘lsangiz:
 
-# test coverage
-$ yarn run test:cov
-```
+Fork qiling
 
-## Deployment
+Yangi branch yarating: git checkout -b my-feature
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+O‘zgarishlar kiriting va commit qiling: git commit -m "Added new feature"
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Push qiling: git push origin my-feature
 
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
+Pull Request yuboring
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+📄 Litsenziya
+Bu loyiha MIT litsenziyasi asosida tarqatiladi.
 
-## Resources
+🎯 Loyiha maqsadi: Do‘konlarning mijozlar bilan moliyaviy hisob-kitoblarini soddalashtirish va zamonaviylashtirish orqali ish samaradorligini oshirish.
 
-Check out a few resources that may come in handy when working with NestJS:
+yaml
+Копировать
+Редактировать
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Agar loyiha hozircha faqat backend yoki frontend qismini o‘z ichiga olgan bo‘lsa, men uni moslashtirib berishim mumkin. Faqat ayting, hozir bu loyiha qaysi texnologiyalar bilan qurilmoqda va qanday holatda?
