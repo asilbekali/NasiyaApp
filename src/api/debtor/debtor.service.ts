@@ -1,26 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/common/prisma/prisma.service';
 import { CreateDebtorDto } from './dto/create-debtor.dto';
 import { UpdateDebtorDto } from './dto/update-debtor.dto';
 
 @Injectable()
 export class DebtorService {
-  create(createDebtorDto: CreateDebtorDto) {
-    return 'This action adds a new debtor';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(dto: CreateDebtorDto, token: Request) {
+    const SellerId = await token['user'].sub;
+
+    if (!(await this.prisma.seller.findFirst({ where: { id: SellerId } }))) {
+      throw new NotFoundException(`Seller with id ${SellerId} not found`);
+    }
+    return await this.prisma.debtor.create({
+      data: {
+        name: dto.name,
+        phoneNumber: dto.phoneNumber,
+        address: dto.address,
+        note: dto.note,
+        seller: {
+          connect: { id: SellerId },
+        },
+        role: 'debtor',
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all debtor`;
+  async findAll() {
+    return await this.prisma.debtor.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} debtor`;
+  async findOne(id: number) {
+    const debtor = await this.prisma.debtor.findUnique({ where: { id } });
+    if (!debtor) throw new NotFoundException(`Debtor with id ${id} not found`);
+    return debtor;
   }
 
-  update(id: number, updateDebtorDto: UpdateDebtorDto) {
-    return `This action updates a #${id} debtor`;
+  async update(id: number, updateDebtorDto: UpdateDebtorDto) {
+    const debtor = await this.prisma.debtor.findUnique({ where: { id } });
+    if (!debtor) throw new NotFoundException(`Debtor with id ${id} not found`);
+
+    return await this.prisma.debtor.update({
+      where: { id },
+      data: updateDebtorDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} debtor`;
+  async remove(id: number) {
+    const debtor = await this.prisma.debtor.findUnique({ where: { id } });
+    if (!debtor) throw new NotFoundException(`Debtor with id ${id} not found`);
+
+    return await this.prisma.debtor.delete({ where: { id } });
   }
 }

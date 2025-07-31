@@ -30,7 +30,6 @@ model debtor {
   address           String
   note              String
   seller            seller              @relation(fields: [sellerId], references: [id])
-  sellerId          Int
   role              roles               @default(debtor)
   createAt          DateTime            @default(now())
   borrowedProduct   borrowedProduct[]
@@ -38,6 +37,7 @@ model debtor {
   debtroPhoneNumber debtroPhoneNumber[]
   message           message[]
   payment           payment[]
+  sellerId          Int
 }
 
 model seller {

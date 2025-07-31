@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { DebtorService } from './debtor.service';
 import { CreateDebtorDto } from './dto/create-debtor.dto';
@@ -20,15 +21,15 @@ import { AuthGuard } from 'src/common/Guards/auth.guard';
 export class DebtorController {
   constructor(private readonly debtorService: DebtorService) {}
 
-  @RoleDec(Role.ADMIN)
+  @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createDebtorDto: CreateDebtorDto) {
-    return this.debtorService.create(createDebtorDto);
+  create(@Body() createDebtorDto: CreateDebtorDto, @Req() req: Request) {
+    return this.debtorService.create(createDebtorDto, req);
   }
 
-  @RoleDec(Role.ADMIN)
+  @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Get()
@@ -36,7 +37,7 @@ export class DebtorController {
     return this.debtorService.findAll();
   }
 
-  @RoleDec(Role.ADMIN)
+  @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Get(':id')
@@ -44,7 +45,7 @@ export class DebtorController {
     return this.debtorService.findOne(+id);
   }
 
-  @RoleDec(Role.ADMIN)
+  @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Patch(':id')
@@ -52,7 +53,7 @@ export class DebtorController {
     return this.debtorService.update(+id, updateDebtorDto);
   }
 
-  @RoleDec(Role.ADMIN)
+  @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Delete(':id')
