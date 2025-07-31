@@ -12,6 +12,14 @@ export class SellerService {
   ) {}
 
   async create(createSellerDto: CreateSellerDto) {
+    const existingSeller = await this.prisma.seller.findFirst({
+      where: { email: createSellerDto.email },
+    });
+
+    if (existingSeller) {
+      throw new NotFoundException('This email is already registered');
+    }
+
     const newSeller = await this.prisma.seller.create({
       data: {
         name: createSellerDto.name,
