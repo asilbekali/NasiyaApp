@@ -34,7 +34,7 @@ Backend:
 ## 🚀 O‘rnatish (local development)
 
 ```bash
-git clone https://github.com/username/nasiya-for-shops.git
+git clone [https://github.com/username/nasiya-for-shops.git](https://github.com/asilbekali/NasiyaApp.git)
 cd nasiya-for-shops
 yarn install
 yarn dev
