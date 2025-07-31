@@ -35,6 +35,7 @@ export class SellerController {
   create(@Body() createSellerDto: CreateSellerDto) {
     return this.sellerService.create(createSellerDto);
   }
+
   @RoleDec(Role.ADMIN)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
@@ -78,6 +79,7 @@ export class SellerController {
       status: parsedStatus,
     });
   }
+
   @RoleDec(Role.ADMIN)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
