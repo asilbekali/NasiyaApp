@@ -21,9 +21,9 @@ CREATE TABLE "public"."debtor" (
     "phoneNumber" TEXT NOT NULL,
     "address" TEXT NOT NULL,
     "note" TEXT NOT NULL,
-    "sellerId" INTEGER NOT NULL,
     "role" "public"."roles" NOT NULL DEFAULT 'debtor',
     "createAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "sellerId" INTEGER NOT NULL,
 
     CONSTRAINT "debtor_pkey" PRIMARY KEY ("id")
 );
@@ -35,7 +35,7 @@ CREATE TABLE "public"."seller" (
     "password" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "wallet" INTEGER NOT NULL,
+    "wallet" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "image" TEXT NOT NULL,
     "status" BOOLEAN NOT NULL DEFAULT false,
     "role" "public"."roles" NOT NULL DEFAULT 'seller',
@@ -132,6 +132,9 @@ CREATE TABLE "public"."messageSample" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "admin_email_key" ON "public"."admin"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "seller_name_key" ON "public"."seller"("name");
 
 -- AddForeignKey
 ALTER TABLE "public"."debtor" ADD CONSTRAINT "debtor_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "public"."seller"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -28,7 +28,17 @@ export class DebtorService {
   }
 
   async findAll() {
-    return await this.prisma.debtor.findMany();
+    return await this.prisma.debtor.findMany({
+      include: {
+        seller: {
+          select: {
+            id: true,
+            name: true,
+            phoneNumber: true,
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: number) {

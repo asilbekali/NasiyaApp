@@ -47,10 +47,34 @@ export class SellerService {
     };
   }
 
+  async payment(money: number, sellerId: number) {
+    const seller = await this.prisma.seller.findUnique({
+      where: { id: sellerId },
+      select: { wallet: true },
+    });
+
+    if (!seller) {
+      throw new NotFoundException('Seller topilmadi');
+    }
+
+    const updatedSeller = await this.prisma.seller.update({
+      where: { id: sellerId },
+      data: {
+        wallet: seller.wallet + money,
+      },
+    });
+
+    return {
+      message: 'Hisobingiz muvaffaqiyatli to‘ldirildi',
+      wallet: updatedSeller.wallet,
+    };
+  }
+
   async login(loginDto: LoginSellerDto) {
     const seller = await this.prisma.seller.findFirst({
       where: { name: loginDto.name },
     });
+    console.log(seller);
 
     if (!seller || seller.password !== loginDto.password) {
       throw new NotFoundException('Invalid name or password');

@@ -41,12 +41,12 @@ model debtor {
 }
 
 model seller {
-  id            Int             @id @default(autoincrement())
-  name          String          @unique
-  password      String
-  phoneNumber   String
-  email         String
-  wallet        Int
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  password    String
+  phoneNumber String
+  email       String
+  wallet        Float           @default(0)
   image         String
   status        Boolean         @default(false)
   debtor        debtor[]

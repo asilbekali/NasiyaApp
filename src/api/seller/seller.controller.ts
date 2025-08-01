@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { SellerService } from './seller.service';
 import { CreateSellerDto } from './dto/create-seller.dto';
@@ -18,6 +19,7 @@ import { RoleDec } from 'src/common/decoratos/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { LoginSellerDto } from './dto/login-seller.dto';
 import { ApiQuery } from '@nestjs/swagger';
+import { PaymentDto } from './dto/payment.dto';
 
 @Controller('seller')
 export class SellerController {
@@ -34,6 +36,15 @@ export class SellerController {
   @Post()
   create(@Body() createSellerDto: CreateSellerDto) {
     return this.sellerService.create(createSellerDto);
+  }
+
+  @RoleDec(Role.SELLER)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
+  @Post('payment')
+  payment(@Body() paymentDto: PaymentDto, @Req() req: Request) {
+    const userId = req['user'].sub;
+    return this.sellerService.payment(paymentDto.money, userId);
   }
 
   @RoleDec(Role.ADMIN)
