@@ -29,9 +29,9 @@ export class DebtorController {
     return this.debtorService.create(createDebtorDto, req);
   }
 
-  // @RoleDec(Role.ADMIN, Role.SELLER)
-  // @UseGuards(RolesGuard)
-  // @UseGuards(AuthGuard)
+  @RoleDec(Role.ADMIN, Role.SELLER)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.debtorService.findAll();
