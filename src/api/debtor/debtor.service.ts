@@ -39,17 +39,11 @@ export class DebtorService {
 
     return newDebtor;
   }
-
   async findAll() {
     return await this.prisma.debtor.findMany({
       include: {
-        seller: {
-          select: {
-            id: true,
-            name: true,
-            phoneNumber: true,
-          },
-        },
+        borrowedProduct: true,
+        seller: true,
       },
     });
   }
