@@ -38,14 +38,23 @@ model debtor {
   message           message[]
   payment           payment[]
   sellerId          Int
+  debtor_image      debtor_image[]
+}
+
+model debtor_image {
+  id       Int      @id @default(autoincrement())
+  debtor   debtor   @relation(fields: [debtorId], references: [id])
+  image    String
+  createAt DateTime @default(now())
+  debtorId Int
 }
 
 model seller {
-  id          Int    @id @default(autoincrement())
-  name        String @unique
-  password    String
-  phoneNumber String
-  email       String
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  password      String
+  phoneNumber   String
+  email         String
   wallet        Float           @default(0)
   image         String
   status        Boolean         @default(false)

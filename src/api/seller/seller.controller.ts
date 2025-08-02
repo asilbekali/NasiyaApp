@@ -25,6 +25,17 @@ import { PaymentDto } from './dto/payment.dto';
 export class SellerController {
   constructor(private readonly sellerService: SellerService) {}
 
+  @RoleDec(Role.SELLER)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
+  @Get('total')
+  thisMonthTotal(@Req() req: Request) {
+    const userId = req['user'].sub;
+    console.log(userId);
+
+    return this.sellerService.thisMonthTotal(userId);
+  }
+
   @Post('login')
   login(@Body() loginDto: LoginSellerDto) {
     return this.sellerService.login(loginDto);

@@ -6,9 +6,10 @@ import { MulterModule } from 'src/infrastructure/lib/multe-r/multer.module';
 import { DebtorModule } from './debtor/debtor.module';
 import { SellerModule } from './seller/seller.module';
 import { FeebackModule } from './feeback/feeback.module';
+import { BorrowedProductModule } from './borrowed-product/borrowed-product.module';
 
 @Module({
-  imports: [AdminModule, MulterModule, DebtorModule, SellerModule, FeebackModule],
+  imports: [AdminModule, MulterModule, DebtorModule, SellerModule, FeebackModule, BorrowedProductModule],
   controllers: [AppController],
   providers: [AppService],
 })

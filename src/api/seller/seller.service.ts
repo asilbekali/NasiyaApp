@@ -74,8 +74,6 @@ export class SellerService {
     const seller = await this.prisma.seller.findFirst({
       where: { name: loginDto.name },
     });
-    console.log(seller);
-
     if (!seller || seller.password !== loginDto.password) {
       throw new NotFoundException('Invalid name or password');
     }
@@ -139,6 +137,35 @@ export class SellerService {
     return {
       message: 'Seller updated successfully',
       seller,
+    };
+  }
+  async thisMonthTotal(sellerId: number) {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const debtors = await this.prisma.debtor.findMany({
+      where: {
+        sellerId,
+        createAt: {
+          gte: startOfMonth,
+          lte: now,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        phoneNumber: true,
+        createAt: true,
+      },
+      orderBy: {
+        createAt: 'desc',
+      },
+    });
+
+    return {
+      sellerId,
+      thisMonthDebtorsCount: debtors.length,
+      debtors,
     };
   }
 
