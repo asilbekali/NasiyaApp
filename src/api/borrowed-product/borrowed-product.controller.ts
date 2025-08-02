@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { BorrowedProductService } from './borrowed-product.service';
 import { CreateBorrowedProductDto } from './dto/create-borrowed-product.dto';
 import { UpdateBorrowedProductDto } from './dto/update-borrowed-product.dto';
 
 @Controller('borrowed-product')
 export class BorrowedProductController {
-  constructor(private readonly borrowedProductService: BorrowedProductService) {}
+  constructor(
+    private readonly borrowedProductService: BorrowedProductService,
+  ) {}
 
   @Post()
   create(@Body() createBorrowedProductDto: CreateBorrowedProductDto) {
@@ -23,7 +33,10 @@ export class BorrowedProductController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBorrowedProductDto: UpdateBorrowedProductDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateBorrowedProductDto: UpdateBorrowedProductDto,
+  ) {
     return this.borrowedProductService.update(+id, updateBorrowedProductDto);
   }
 

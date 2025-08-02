@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsInt, IsDateString } from 'class-validator';
+import {
+  IsString,
+  IsInt,
+  IsDateString,
+  IsArray,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateBorrowedProductDto {
   @ApiProperty({ example: 'Laptop' })
@@ -21,4 +27,17 @@ export class CreateBorrowedProductDto {
   @ApiProperty({ example: 1 })
   @IsInt()
   debtorId: number;
+
+  @ApiProperty({
+    example: [
+      'https://example.com/image1.jpg',
+      'https://example.com/image2.jpg',
+    ],
+    type: [String],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  images?: string[];
 }
