@@ -24,19 +24,18 @@ export class DebtorController {
   @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
-  @Post()
-  create(@Body() createDebtorDto: CreateDebtorDto, @Req() req: Request) {
-    return this.debtorService.create(createDebtorDto, req);
-  }
-
-  @RoleDec(Role.ADMIN, Role.SELLER)
-  @UseGuards(RolesGuard)
-  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.debtorService.findAll();
   }
 
+  @RoleDec(Role.ADMIN, Role.SELLER)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
+  @Post()
+  create(@Body() createDebtorDto: CreateDebtorDto, @Req() req: Request) {
+    return this.debtorService.create(createDebtorDto, req);
+  }
   @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)

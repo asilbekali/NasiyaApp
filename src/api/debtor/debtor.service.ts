@@ -13,7 +13,7 @@ export class DebtorService {
     if (!(await this.prisma.seller.findFirst({ where: { id: SellerId } }))) {
       throw new NotFoundException(`Seller with id ${SellerId} not found`);
     }
-    return await this.prisma.debtor.create({
+    const newDebtor = await this.prisma.debtor.create({
       data: {
         name: dto.name,
         phoneNumber: dto.phoneNumber,
@@ -25,6 +25,19 @@ export class DebtorService {
         role: 'debtor',
       },
     });
+
+    if (dto.images && dto.images.length > 0) {
+      for (const item of dto.images) {
+        await this.prisma.debtor_image.create({
+          data: {
+            debtorId: newDebtor.id,
+            image: item,
+          },
+        });
+      }
+    }
+
+    return newDebtor;
   }
 
   async findAll() {
