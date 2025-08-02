@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBorrowedProductDto } from './dto/create-borrowed-product.dto';
 import { UpdateBorrowedProductDto } from './dto/update-borrowed-product.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
@@ -6,84 +6,25 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 @Injectable()
 export class BorrowedProductService {
   constructor(private readonly prisma: PrismaService) {}
-
   async create(dto: CreateBorrowedProductDto) {
-    return this.prisma.borrowedProduct.create({
-      data: {
-        productName: dto.productName,
-        term: new Date(dto.term),
-        totalAmount: dto.totalAmount,
-        note: dto.note,
-        debtorId: dto.debtorId,
-      },
-      include: {
-        borrowedProductImage: true,
-        payment: true,
-        debtor: true,
-      },
-    });
-  }
-
-  async findAll() {
-    return this.prisma.borrowedProduct.findMany({
-      include: {
-        borrowedProductImage: true,
-        payment: true,
-        debtor: true,
-      },
-    });
-  }
-
-  async findOne(id: number) {
-    const borrowedProduct = await this.prisma.borrowedProduct.findUnique({
-      where: { id },
-      include: {
-        borrowedProductImage: true,
-        payment: true,
-        debtor: true,
-      },
-    });
-    if (!borrowedProduct) {
-      throw new NotFoundException(`BorrowedProduct with id ${id} not found`);
+    if (!await this.prisma.debtor.findFirst({ where: { id: dto.debtorId } })) {
+      throw new BadRequestException("Debtor id not found !")
     }
-    return borrowedProduct;
   }
 
-  async update(id: number, dto: UpdateBorrowedProductDto) {
-    const existingProduct = await this.prisma.borrowedProduct.findUnique({
-      where: { id },
-    });
-    if (!existingProduct) {
-      throw new NotFoundException(`BorrowedProduct with id ${id} not found`);
-    }
-
-    return this.prisma.borrowedProduct.update({
-      where: { id },
-      data: {
-        productName: dto.productName ?? existingProduct.productName,
-        term: dto.term ? new Date(dto.term) : existingProduct.term,
-        totalAmount: dto.totalAmount ?? existingProduct.totalAmount,
-        note: dto.note ?? existingProduct.note,
-        debtorId: dto.debtorId ?? existingProduct.debtorId,
-      },
-      include: {
-        borrowedProductImage: true,
-        payment: true,
-        debtor: true,
-      },
-    });
+  findAll() {
+    return `This action returns all borrowedProduct`;
   }
 
-  async remove(id: number) {
-    const existingProduct = await this.prisma.borrowedProduct.findUnique({
-      where: { id },
-    });
-    if (!existingProduct) {
-      throw new NotFoundException(`BorrowedProduct with id ${id} not found`);
-    }
+  findOne(id: number) {
+    return `This action returns a #${id} borrowedProduct`;
+  }
 
-    return this.prisma.borrowedProduct.delete({
-      where: { id },
-    });
+  update(id: number, updateBorrowedProductDto: UpdateBorrowedProductDto) {
+    return `This action updates a #${id} borrowedProduct`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} borrowedProduct`;
   }
 }

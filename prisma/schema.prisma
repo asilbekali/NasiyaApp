@@ -89,6 +89,14 @@ model borrowedProduct {
   payment              payment[]
 }
 
+model borrowedProductImage {
+  id                Int             @id @default(autoincrement())
+  image             String
+  borrowedProduct   borrowedProduct @relation(fields: [borrowedProductId], references: [id])
+  borrowedProductId Int
+  createAt          DateTime        @default(now())
+}
+
 model paymentHistory {
   id       Int      @id @default(autoincrement())
   debtor   debtor   @relation(fields: [debtorId], references: [id])
@@ -103,14 +111,6 @@ model debtroPhoneNumber {
   number   String
   debtorId Int
   createAt DateTime @default(now())
-}
-
-model borrowedProductImage {
-  id                Int             @id @default(autoincrement())
-  image             String
-  borrowedProduct   borrowedProduct @relation(fields: [borrowedProductId], references: [id])
-  borrowedProductId Int
-  createAt          DateTime        @default(now())
 }
 
 model message {
