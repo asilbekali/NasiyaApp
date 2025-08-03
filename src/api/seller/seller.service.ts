@@ -55,7 +55,7 @@ export class SellerService {
 
         const isPaidThisMonth = await this.prisma.paymentHistory.findFirst({
           where: {
-            borrowedProductId: product.id, 
+            borrowedProductId: product.id,
             createAt: {
               gte: startOfMonth,
               lte: endOfMonth,
@@ -239,15 +239,10 @@ export class SellerService {
       },
       include: {
         borrowedProduct: {
-          where: {
-            createAt: {
-              gte: startOfMonth,
-              lte: now,
-            },
-          },
           select: {
             monthPayment: true,
             createAt: true,
+            totalAmount: true,
           },
         },
         debtroPhoneNumber: {
@@ -264,7 +259,12 @@ export class SellerService {
     let totalAmount = 0;
 
     const debtorDetails = debtors.map((debtor) => {
-      const debtorTotalDebt = debtor.borrowedProduct.reduce(
+      // Filter out borrowedProducts with totalAmount = 0
+      const activeBorrowedProducts = debtor.borrowedProduct.filter(
+        (bp) => bp.totalAmount > 0,
+      );
+
+      const debtorTotalDebt = activeBorrowedProducts.reduce(
         (sum, bp) => sum + bp.monthPayment,
         0,
       );
@@ -280,11 +280,16 @@ export class SellerService {
       };
     });
 
+    // Debtors with no active debts (0 sum) will be excluded
+    const filteredDebtors = debtorDetails.filter(
+      (debtor) => debtor.totalDebt > 0,
+    );
+
     return {
       sellerId,
-      thisMonthDebtorsCount: debtorDetails.length,
+      thisMonthDebtorsCount: filteredDebtors.length,
       thisMonthTotalAmount: totalAmount,
-      debtors: debtorDetails,
+      debtors: filteredDebtors,
     };
   }
 
