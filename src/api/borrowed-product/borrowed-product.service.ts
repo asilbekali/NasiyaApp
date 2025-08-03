@@ -19,13 +19,31 @@ export class BorrowedProductService {
       throw new BadRequestException('Debtor id not found!');
     }
 
+    const createAt = new Date();
+    const termDate = new Date(dto.term);
+
+    if (termDate <= createAt) {
+      throw new BadRequestException('Term date must be in the future');
+    }
+
+    const monthsDiff =
+      (termDate.getFullYear() - createAt.getFullYear()) * 12 +
+      (termDate.getMonth() - createAt.getMonth());
+
+    if (monthsDiff <= 0) {
+      throw new BadRequestException('Term difference must be at least 1 month');
+    }
+
+    const monthPayment = Math.ceil(dto.totalAmount / monthsDiff);
+
     const borrowedProduct = await this.prisma.borrowedProduct.create({
       data: {
         productName: dto.productName,
-        term: new Date(dto.term),
+        term: termDate,
         totalAmount: dto.totalAmount,
         note: dto.note,
         debtorId: dto.debtorId,
+        monthPayment,
       },
       include: {
         debtor: true,

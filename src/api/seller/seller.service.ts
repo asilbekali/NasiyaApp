@@ -161,7 +161,7 @@ export class SellerService {
             },
           },
           select: {
-            totalAmount: true,
+            monthPayment: true,
             createAt: true,
           },
         },
@@ -180,7 +180,7 @@ export class SellerService {
 
     const debtorDetails = debtors.map((debtor) => {
       const debtorTotalDebt = debtor.borrowedProduct.reduce(
-        (sum, bp) => sum + bp.totalAmount,
+        (sum, bp) => sum + bp.monthPayment,
         0,
       );
       totalAmount += debtorTotalDebt;
@@ -190,7 +190,7 @@ export class SellerService {
       return {
         id: debtor.id,
         name: debtor.name,
-        phoneNumbers, // Array of phone numbers
+        phoneNumbers,
         totalDebt: debtorTotalDebt,
       };
     });

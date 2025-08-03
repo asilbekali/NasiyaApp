@@ -1,26 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsString,
   IsInt,
-  IsDateString,
-  IsArray,
+  IsString,
   IsOptional,
+  IsArray,
+  IsDateString,
 } from 'class-validator';
 
 export class CreateBorrowedProductDto {
-  @ApiProperty({ example: 'Laptop' })
+  @ApiProperty({ example: 'Televizor LG' })
   @IsString()
   productName: string;
 
-  @ApiProperty({ example: '2025-08-01' })
+  @ApiProperty({ example: '2025-12-31T00:00:00.000Z' })
   @IsDateString()
-  term: string;
+  term: string; // <-- ISO DateTime string bo‘lib keladi
 
-  @ApiProperty({ example: 15000000 })
+  @ApiProperty({ example: 4000000 })
   @IsInt()
   totalAmount: number;
 
-  @ApiProperty({ example: 'Urgent borrow' })
+  @ApiProperty({ example: '3 oylik muddat' })
   @IsString()
   note: string;
 

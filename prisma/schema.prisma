@@ -83,6 +83,7 @@ model borrowedProduct {
   note                 String
   debtor               debtor                 @relation(fields: [debtorId], references: [id])
   debtorId             Int
+  monthPayment         Int
   createAt             DateTime               @default(now())
   borrowedProductImage borrowedProductImage[]
   payment              payment[]
