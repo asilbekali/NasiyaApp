@@ -139,6 +139,7 @@ export class SellerService {
       seller,
     };
   }
+
   async thisMonthTotal(sellerId: number) {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -151,21 +152,48 @@ export class SellerService {
           lte: now,
         },
       },
-      select: {
-        id: true,
-        name: true,
-        phoneNumber: true,
-        createAt: true,
+      include: {
+        borrowedProduct: {
+          where: {
+            createAt: {
+              gte: startOfMonth,
+              lte: now,
+            },
+          },
+          select: {
+            totalAmount: true, // <-- Bu yerda amount emas, totalAmount
+            createAt: true,
+          },
+        },
       },
       orderBy: {
         createAt: 'desc',
       },
     });
 
+    // Har bir debtor bo'yicha borrowedProduct.totalAmount larini yig'ish
+    let totalAmount = 0;
+
+    const debtorDetails = debtors.map((debtor) => {
+      const debtorTotalDebt = debtor.borrowedProduct.reduce(
+        (sum, bp) => sum + bp.totalAmount,
+        0,
+      );
+      totalAmount += debtorTotalDebt;
+
+      return {
+        id: debtor.id,
+        name: debtor.name,
+        phoneNumber: debtor.phoneNumber,
+        totalDebt: debtorTotalDebt,
+      };
+    });
+
     return {
       sellerId,
-      thisMonthDebtorsCount: debtors.length,
-      debtors,
+      thisMonthDebtorsCount: debtorDetails.length,
+      thisMonthTotalAmount: totalAmount,
+      debtors: debtorDetails,
     };
   }
 

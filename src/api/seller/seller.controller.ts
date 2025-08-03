@@ -28,7 +28,7 @@ export class SellerController {
   @RoleDec(Role.SELLER)
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
-  @Get('total')
+  @Get('month-total')
   thisMonthTotal(@Req() req: Request) {
     const userId = req['user'].sub;
     console.log(userId);
