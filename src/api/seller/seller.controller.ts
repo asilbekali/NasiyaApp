@@ -26,6 +26,7 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { PaymentDto } from './dto/payment.dto';
+import { LateDebtor } from './interface/late-debtor.interface';
 
 @ApiTags('Seller')
 @Controller('seller')
@@ -38,8 +39,22 @@ export class SellerController {
   @ApiOkResponse({ description: 'This month total debts for seller' })
   @Get('month-total')
   thisMonthTotal(@Req() req: Request) {
-    const userId = req['user'].sub;
-    return this.sellerService.thisMonthTotal(userId);
+    const SellerId = req['user'].sub;
+    return this.sellerService.thisMonthTotal(SellerId);
+  }
+
+  @RoleDec(Role.SELLER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Late payment customers' })
+  @Get('late-customers') 
+  latecustomers(@Req() req: Request): Promise<{
+    sellerId: number;
+    lateDebtorsCount: number;
+    lateDebtors: LateDebtor[];
+  }> {
+    const SellerId = req['user'].sub;
+    return this.sellerService.LatePaymentCustomers(SellerId);
   }
 
   @RoleDec(Role.SELLER)
@@ -48,8 +63,8 @@ export class SellerController {
   @ApiOkResponse({ description: 'Payment done successfully' })
   @Post('payment')
   payment(@Body() paymentDto: PaymentDto, @Req() req: Request) {
-    const userId = req['user'].sub;
-    return this.sellerService.payment(paymentDto.money, userId);
+    const SellerId = req['user'].sub;
+    return this.sellerService.payment(paymentDto.money, SellerId);
   }
 
   @Post('login')

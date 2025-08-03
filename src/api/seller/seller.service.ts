@@ -5,6 +5,7 @@ import { UpdateSellerDto } from './dto/update-seller.dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginSellerDto } from './dto/login-seller.dto';
 import { MailService } from 'src/common/mail/mail.service';
+import { LateDebtor, LateProduct } from './interface/late-debtor.interface';
 
 @Injectable()
 export class SellerService {
@@ -13,6 +14,83 @@ export class SellerService {
     private readonly jwt: JwtService,
     private readonly email: MailService,
   ) {}
+
+  async LatePaymentCustomers(sellerId: number): Promise<{
+    sellerId: number;
+    lateDebtorsCount: number;
+    lateDebtors: LateDebtor[];
+  }> {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const debtors = await this.prisma.debtor.findMany({
+      where: { sellerId },
+      include: {
+        borrowedProduct: {
+          select: {
+            id: true,
+            productName: true,
+            term: true,
+            monthPayment: true,
+            createAt: true,
+          },
+        },
+        debtroPhoneNumber: {
+          select: { number: true },
+        },
+      },
+    });
+
+    const lateDebtors: LateDebtor[] = [];
+
+    for (const debtor of debtors) {
+      const lateProducts: LateProduct[] = [];
+
+      for (const product of debtor.borrowedProduct) {
+        const paymentDueDay = product.createAt.getDate();
+        const today = now.getDate();
+
+        const isPaymentDayPassed = today >= paymentDueDay;
+
+        const isPaidThisMonth = await this.prisma.paymentHistory.findFirst({
+          where: {
+            borrowedProductId: product.id, 
+            createAt: {
+              gte: startOfMonth,
+              lte: endOfMonth,
+            },
+          },
+        });
+
+        const hasPaid = !!isPaidThisMonth;
+
+        if (isPaymentDayPassed && !hasPaid) {
+          lateProducts.push({
+            borrowedProduct: product.id,
+            productName: product.productName,
+            term: product.term,
+            monthPayment: product.monthPayment,
+          });
+        }
+      }
+
+      if (lateProducts.length > 0) {
+        lateDebtors.push({
+          debtorId: debtor.id,
+          debtorName: debtor.name,
+          phoneNumbers: debtor.debtroPhoneNumber.map((pn) => pn.number),
+          lateProducts,
+        });
+      }
+    }
+
+    return {
+      sellerId,
+      lateDebtorsCount: lateDebtors.length,
+      lateDebtors,
+    };
+  }
 
   async create(createSellerDto: CreateSellerDto) {
     const existingEmail = await this.prisma.seller.findFirst({
@@ -40,7 +118,7 @@ export class SellerService {
         wallet: 0,
         image: createSellerDto.image,
         status: true,
-      }
+      },
     });
     this.email.sendEmail(
       createSellerDto.email,
