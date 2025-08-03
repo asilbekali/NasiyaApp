@@ -9,6 +9,7 @@ import {
   PayAsYouWishDto,
 } from './dto/create-payment-section.dto';
 import { RemainingMonthsDto } from './dto/RemainingMonthsDto';
+import { MultiMonthPayDto } from './dto/MultiMonthPayDto';
 
 @Injectable()
 export class PaymentSectionService {
@@ -185,4 +186,80 @@ export class PaymentSectionService {
       remainingMonths,
     };
   }
+
+
+
+  async multiMonthPay(dto: MultiMonthPayDto, SellerId: number) {
+  const borrowedProduct = await this.prisma.borrowedProduct.findUnique({
+    where: { id: dto.borrowedProductId },
+  });
+
+  if (!borrowedProduct) {
+    throw new NotFoundException('Borrowed product not found');
+  }
+
+  if (borrowedProduct.debtorId !== dto.debtorId) {
+    throw new BadRequestException(
+      'This borrowed product does not belong to the specified debtor',
+    );
+  }
+
+  if (borrowedProduct.totalAmount <= 0) {
+    throw new BadRequestException(
+      'This product is already fully paid. Further payments are not allowed.',
+    );
+  }
+
+  const remainingMonths = Math.ceil(
+    borrowedProduct.totalAmount / borrowedProduct.monthPayment,
+  );
+
+  if (dto.monthsToPay > remainingMonths) {
+    throw new BadRequestException(
+      `You cannot pay more than ${remainingMonths} months. Only ${remainingMonths} months are left.`,
+    );
+  }
+
+  const totalPayment = dto.monthsToPay * borrowedProduct.monthPayment;
+
+  await this.prisma.paymentHistory.create({
+    data: {
+      borrowedProductId: dto.borrowedProductId,
+      debtorId: dto.debtorId,
+      amount: totalPayment,
+    },
+  });
+
+  await this.prisma.seller.update({
+    where: { id: SellerId },
+    data: {
+      wallet: {
+        increment: totalPayment,
+      },
+    },
+  });
+
+  const newTotal = borrowedProduct.totalAmount - totalPayment;
+
+  await this.prisma.borrowedProduct.update({
+    where: { id: dto.borrowedProductId },
+    data: { totalAmount: newTotal },
+  });
+
+  const remainingMonthsAfterPayment = Math.ceil(
+    newTotal / borrowedProduct.monthPayment,
+  );
+
+  const message =
+    newTotal <= 0
+      ? 'Payment completed. Total amount is now 0 sum.'
+      : `Payment successful. ${remainingMonthsAfterPayment} months of payment remaining`;
+
+  return {
+    message,
+    remainingAmount: newTotal,
+    remainingMonths: remainingMonthsAfterPayment,
+  };
+}
+
 }

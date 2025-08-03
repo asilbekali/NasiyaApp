@@ -10,6 +10,7 @@ import { RemainingMonthsDto } from './dto/RemainingMonthsDto';
 import { RolesGuard } from 'src/common/Guards/roles.guard';
 import { RoleDec } from 'src/common/decoratos/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
+import { MultiMonthPayDto } from './dto/MultiMonthPayDto';
 
 @Controller('payment-section')
 export class PaymentSectionController {
@@ -37,5 +38,14 @@ export class PaymentSectionController {
   @Post('remaining-months')
   getRemainingMonths(@Body() dto: RemainingMonthsDto) {
     return this.paymentSectionService.calculateRemainingMonths(dto);
+  }
+
+  @RoleDec(Role.SELLER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Post('multi-month-pay')
+  @ApiBearerAuth()
+  multiMonthPay(@Body() dto: MultiMonthPayDto, @Req() req: Request) {
+    const SellerId = req['user'].sub;
+    return this.paymentSectionService.multiMonthPay(dto, SellerId);
   }
 }
