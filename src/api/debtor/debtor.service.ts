@@ -8,15 +8,18 @@ export class DebtorService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateDebtorDto, token: Request) {
-    const SellerId = await token['user'].sub;
+    const SellerId = token['user'].sub;
 
-    if (!(await this.prisma.seller.findFirst({ where: { id: SellerId } }))) {
+    const existingSeller = await this.prisma.seller.findFirst({
+      where: { id: SellerId },
+    });
+    if (!existingSeller) {
       throw new NotFoundException(`Seller with id ${SellerId} not found`);
     }
+
     const newDebtor = await this.prisma.debtor.create({
       data: {
         name: dto.name,
-        phoneNumber: dto.phoneNumber,
         address: dto.address,
         note: dto.note,
         seller: {
@@ -27,11 +30,22 @@ export class DebtorService {
     });
 
     if (dto.images && dto.images.length > 0) {
-      for (const item of dto.images) {
+      for (const image of dto.images) {
         await this.prisma.debtor_image.create({
           data: {
             debtorId: newDebtor.id,
-            image: item,
+            image: image,
+          },
+        });
+      }
+    }
+
+    if (dto.phoneNumbers && dto.phoneNumbers.length > 0) {
+      for (const number of dto.phoneNumbers) {
+        await this.prisma.debtroPhoneNumber.create({
+          data: {
+            debtorId: newDebtor.id,
+            number: number,
           },
         });
       }
@@ -39,17 +53,26 @@ export class DebtorService {
 
     return newDebtor;
   }
+
   async findAll() {
     return await this.prisma.debtor.findMany({
       include: {
         borrowedProduct: true,
-        seller: true,
+        debtor_image: true,
+        debtroPhoneNumber: true,
       },
     });
   }
 
   async findOne(id: number) {
-    const debtor = await this.prisma.debtor.findUnique({ where: { id } });
+    const debtor = await this.prisma.debtor.findUnique({
+      where: { id },
+      include: {
+        debtor_image: true,
+        debtroPhoneNumber: true,
+        borrowedProduct: true,
+      },
+    });
     if (!debtor) throw new NotFoundException(`Debtor with id ${id} not found`);
     return debtor;
   }

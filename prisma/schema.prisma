@@ -26,7 +26,6 @@ model admin {
 model debtor {
   id                Int                 @id @default(autoincrement())
   name              String
-  phoneNumber       String
   address           String
   note              String
   seller            seller              @relation(fields: [sellerId], references: [id])

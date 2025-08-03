@@ -161,8 +161,13 @@ export class SellerService {
             },
           },
           select: {
-            totalAmount: true, // <-- Bu yerda amount emas, totalAmount
+            totalAmount: true,
             createAt: true,
+          },
+        },
+        debtroPhoneNumber: {
+          select: {
+            number: true,
           },
         },
       },
@@ -171,7 +176,6 @@ export class SellerService {
       },
     });
 
-    // Har bir debtor bo'yicha borrowedProduct.totalAmount larini yig'ish
     let totalAmount = 0;
 
     const debtorDetails = debtors.map((debtor) => {
@@ -181,10 +185,12 @@ export class SellerService {
       );
       totalAmount += debtorTotalDebt;
 
+      const phoneNumbers = debtor.debtroPhoneNumber.map((pn) => pn.number);
+
       return {
         id: debtor.id,
         name: debtor.name,
-        phoneNumber: debtor.phoneNumber,
+        phoneNumbers, // Array of phone numbers
         totalDebt: debtorTotalDebt,
       };
     });

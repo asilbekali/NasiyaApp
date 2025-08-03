@@ -6,9 +6,10 @@ export class CreateDebtorDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: '+998901234567' })
-  @IsString()
-  phoneNumber: string;
+  @ApiProperty({ example: ['+998901234567', '+998901234568'] })
+  @IsArray()
+  @IsString({ each: true })
+  phoneNumbers: string[];
 
   @ApiProperty({ example: 'Toshkent, Yunusobod tuman' })
   @IsString()
