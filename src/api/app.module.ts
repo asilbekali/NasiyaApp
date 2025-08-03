@@ -8,9 +8,10 @@ import { SellerModule } from './seller/seller.module';
 import { FeebackModule } from './feedback/feeback.module';
 import { BorrowedProductModule } from './borrowed-product/borrowed-product.module';
 import { PaymentSectionModule } from './payment-section/payment-section.module';
+import { ProductHistoryModule } from './product-history/product-history.module';
 
 @Module({
-  imports: [AdminModule, MulterModule, DebtorModule, SellerModule, FeebackModule, BorrowedProductModule, PaymentSectionModule],
+  imports: [AdminModule, MulterModule, DebtorModule, SellerModule, FeebackModule, BorrowedProductModule, PaymentSectionModule, ProductHistoryModule],
   controllers: [AppController],
   providers: [AppService],
 })
