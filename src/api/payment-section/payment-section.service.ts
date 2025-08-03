@@ -12,6 +12,7 @@ import {
 @Injectable()
 export class PaymentSectionService {
   constructor(private readonly prisma: PrismaService) {}
+
   async oneMonthPay(dto: CreatePaymentSectionDto, SellerId: number) {
     const borrowedProduct = await this.prisma.borrowedProduct.findUnique({
       where: { id: dto.borrowedProductId },
@@ -22,10 +23,15 @@ export class PaymentSectionService {
     }
 
     if (borrowedProduct.totalAmount <= 0) {
-      await this.prisma.borrowedProduct.delete({
-        where: { id: dto.borrowedProductId },
-      });
-      return { message: 'This product is fully paid and has been removed.' };
+      throw new BadRequestException(
+        'This product is already fully paid. Further payments are not allowed.',
+      );
+    }
+
+    if (borrowedProduct.totalAmount < borrowedProduct.monthPayment) {
+      throw new BadRequestException(
+        `Remaining amount is less than a month's payment. Please use "Pay As You Wish" option.`,
+      );
     }
 
     await this.prisma.paymentHistory.create({
@@ -48,11 +54,14 @@ export class PaymentSectionService {
     });
 
     if (newTotal <= 0) {
-      await this.prisma.borrowedProduct.delete({
+      await this.prisma.borrowedProduct.update({
         where: { id: dto.borrowedProductId },
+        data: { totalAmount: 0 },
       });
+
       return {
-        message: 'Payment completed. Borrowed product has been removed.',
+        message:
+          'Payment completed. Total amount is now 0 sum. No further payments are allowed.',
       };
     } else {
       await this.prisma.borrowedProduct.update({
@@ -70,7 +79,7 @@ export class PaymentSectionService {
     const borrowedProduct = await this.prisma.borrowedProduct.findUnique({
       where: { id: dto.borrowedProductId },
       include: {
-        borrowedProductImage: true, 
+        borrowedProductImage: true,
       },
     });
 

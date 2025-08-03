@@ -14,7 +14,7 @@ export class CreateBorrowedProductDto {
 
   @ApiProperty({ example: '2025-12-31T00:00:00.000Z' })
   @IsDateString()
-  term: string; // <-- ISO DateTime string bo‘lib keladi
+  term: string; 
 
   @ApiProperty({ example: 4000000 })
   @IsInt()
