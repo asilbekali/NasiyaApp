@@ -8,6 +8,7 @@ import {
   CreatePaymentSectionDto,
   PayAsYouWishDto,
 } from './dto/create-payment-section.dto';
+import { RemainingMonthsDto } from './dto/RemainingMonthsDto';
 
 @Injectable()
 export class PaymentSectionService {
@@ -147,5 +148,41 @@ export class PaymentSectionService {
         remainingAmount: newTotal,
       };
     }
+  }
+
+  async calculateRemainingMonths(dto: RemainingMonthsDto) {
+    const borrowedProduct = await this.prisma.borrowedProduct.findUnique({
+      where: { id: dto.borrowedProductId },
+    });
+
+    if (!borrowedProduct) {
+      throw new NotFoundException('Borrowed product not found');
+    }
+
+    if (borrowedProduct.debtorId !== dto.debtorId) {
+      throw new BadRequestException(
+        'This borrowed product does not belong to the specified debtor',
+      );
+    }
+
+    if (borrowedProduct.totalAmount <= 0) {
+      return {
+        message: 'This product is fully paid. No remaining payments.',
+        remainingMonths: 0,
+        remainingAmount: 0,
+      };
+    }
+
+    const remainingMonths = Math.ceil(
+      borrowedProduct.totalAmount / borrowedProduct.monthPayment,
+    );
+
+    return {
+      borrowedProductId: dto.borrowedProductId,
+      debtorId: dto.debtorId,
+      totalAmount: borrowedProduct.totalAmount,
+      monthPayment: borrowedProduct.monthPayment,
+      remainingMonths,
+    };
   }
 }

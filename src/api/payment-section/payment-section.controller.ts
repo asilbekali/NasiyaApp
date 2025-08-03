@@ -6,6 +6,10 @@ import {
 } from './dto/create-payment-section.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/Guards/auth.guard';
+import { RemainingMonthsDto } from './dto/RemainingMonthsDto';
+import { RolesGuard } from 'src/common/Guards/roles.guard';
+import { RoleDec } from 'src/common/decoratos/roles.decorator';
+import { Role } from 'src/common/enums/role.enum';
 
 @Controller('payment-section')
 export class PaymentSectionController {
@@ -26,5 +30,12 @@ export class PaymentSectionController {
   payAsYouWish(@Body() dto: PayAsYouWishDto, @Req() req: Request) {
     const SellerId = req['user'].sub;
     return this.paymentSectionService.payAsYouWish(dto, SellerId);
+  }
+
+  @RoleDec(Role.SELLER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Post('remaining-months')
+  getRemainingMonths(@Body() dto: RemainingMonthsDto) {
+    return this.paymentSectionService.calculateRemainingMonths(dto);
   }
 }
