@@ -9,9 +9,10 @@ import { FeebackModule } from './feedback/feeback.module';
 import { BorrowedProductModule } from './borrowed-product/borrowed-product.module';
 import { PaymentSectionModule } from './payment-section/payment-section.module';
 import { ProductHistoryModule } from './product-history/product-history.module';
+import { SenMessageDebtorModule } from './sen-message-debtor/sen-message-debtor.module';
 
 @Module({
-  imports: [AdminModule, MulterModule, DebtorModule, SellerModule, FeebackModule, BorrowedProductModule, PaymentSectionModule, ProductHistoryModule],
+  imports: [AdminModule, MulterModule, DebtorModule, SellerModule, FeebackModule, BorrowedProductModule, PaymentSectionModule, ProductHistoryModule, SenMessageDebtorModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -121,7 +121,7 @@ export class BorrowedProductService {
       include: {
         debtor: true,
         borrowedProductImage: true,
-        payment: true,
+        paymentHistory: true,
       },
     });
   }
