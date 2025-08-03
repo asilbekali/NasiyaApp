@@ -47,7 +47,7 @@ export class SellerController {
   @UseGuards(AuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'Late payment customers' })
-  @Get('late-customers') 
+  @Get('late-customers')
   latecustomers(@Req() req: Request): Promise<{
     sellerId: number;
     lateDebtorsCount: number;
@@ -82,7 +82,7 @@ export class SellerController {
     return this.sellerService.create(createSellerDto);
   }
 
-  @RoleDec(Role.ADMIN)
+  @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(AuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiQuery({
