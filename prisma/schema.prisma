@@ -35,7 +35,6 @@ model debtor {
   paymentHistory    paymentHistory[]
   debtroPhoneNumber debtroPhoneNumber[]
   message           message[]
-  payment           payment[]
   sellerId          Int
   debtor_image      debtor_image[]
 }
@@ -86,7 +85,6 @@ model borrowedProduct {
   monthPayment         Int
   createAt             DateTime               @default(now())
   borrowedProductImage borrowedProductImage[]
-  payment              payment[]
   paymentHistory       paymentHistory[]
 }
 
@@ -125,16 +123,6 @@ model message {
   sellerId Int
   debtorId Int
   createAt DateTime @default(now())
-}
-
-model payment {
-  id                Int             @id @default(autoincrement())
-  debtor            debtor          @relation(fields: [debtorId], references: [id])
-  borrowedProduct   borrowedProduct @relation(fields: [borrowedProductId], references: [id])
-  amount            Int
-  debtorId          Int
-  borrowedProductId Int
-  createAt          DateTime        @default(now())
 }
 
 model messageSample {
