@@ -94,7 +94,6 @@ export class PaymentSectionService {
       );
     }
 
-    // PaymentHistory create
     await this.prisma.paymentHistory.create({
       data: {
         borrowedProductId: dto.borrowedProductId,
@@ -103,7 +102,6 @@ export class PaymentSectionService {
       },
     });
 
-    // Seller walletga qo'shish
     await this.prisma.seller.update({
       where: { id: SellerId },
       data: {
@@ -115,7 +113,6 @@ export class PaymentSectionService {
 
     const newTotal = borrowedProduct.totalAmount - dto.amount;
 
-    // Agar totalAmount 0 yoki undan kichik bo'lsa, faqat xabar beradi, delete qilmaydi
     if (newTotal <= 0) {
       await this.prisma.borrowedProduct.update({
         where: { id: dto.borrowedProductId },
@@ -127,7 +124,6 @@ export class PaymentSectionService {
           'Payment completed. The total amount is now 0 sum. Further payments are not allowed.',
       };
     } else {
-      // Qarzi qolgan bo'lsa, totalAmount ni yangilash
       await this.prisma.borrowedProduct.update({
         where: { id: dto.borrowedProductId },
         data: { totalAmount: newTotal },
