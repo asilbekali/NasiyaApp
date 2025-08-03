@@ -4,12 +4,14 @@ import { CreateSellerDto } from './dto/create-seller.dto';
 import { UpdateSellerDto } from './dto/update-seller.dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginSellerDto } from './dto/login-seller.dto';
+import { MailService } from 'src/common/mail/mail.service';
 
 @Injectable()
 export class SellerService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly email: MailService,
   ) {}
 
   async create(createSellerDto: CreateSellerDto) {
@@ -38,8 +40,13 @@ export class SellerService {
         wallet: 0,
         image: createSellerDto.image,
         status: true,
-      },
+      }
     });
+    this.email.sendEmail(
+      createSellerDto.email,
+      'Your login user name and password',
+      `Login UserName: ${newSeller.name}\nLogin Password: ${createSellerDto.password}`,
+    );
 
     return {
       message: 'Seller successfully created',

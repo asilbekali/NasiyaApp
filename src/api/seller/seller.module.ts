@@ -3,9 +3,11 @@ import { SellerService } from './seller.service';
 import { SellerController } from './seller.controller';
 import { PrismaModule } from 'src/common/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
+import { MailModule } from 'src/common/mail/mail.module';
 
 @Module({
   imports: [
+    MailModule,
     PrismaModule,
     JwtModule.register({
       secret: process.env.JWT_SECRETKEY,
