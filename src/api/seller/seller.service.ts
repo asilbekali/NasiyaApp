@@ -157,10 +157,10 @@ export class SellerService {
 
   async login(loginDto: LoginSellerDto) {
     const seller = await this.prisma.seller.findFirst({
-      where: { name: loginDto.name },
+      where: { email: loginDto.email },
     });
     if (!seller || seller.password !== loginDto.password) {
-      throw new NotFoundException('Invalid name or password');
+      throw new NotFoundException('Invalid email or password');
     }
 
     const payload = { sub: seller.id, role: seller.role };
