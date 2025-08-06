@@ -35,7 +35,6 @@ export class SellerController {
 
   @RoleDec(Role.SELLER)
   @UseGuards(AuthGuard, RolesGuard)
-  @ApiBearerAuth()
   @ApiOkResponse({ description: 'This month total debts for seller' })
   @Get('month-total')
   thisMonthTotal(@Req() req: Request) {
@@ -45,7 +44,6 @@ export class SellerController {
 
   @RoleDec(Role.SELLER)
   @UseGuards(AuthGuard, RolesGuard)
-  @ApiBearerAuth()
   @ApiOkResponse({ description: 'Late payment customers' })
   @Get('late-customers')
   latecustomers(@Req() req: Request): Promise<{
@@ -59,7 +57,6 @@ export class SellerController {
 
   @RoleDec(Role.SELLER)
   @UseGuards(AuthGuard, RolesGuard)
-  @ApiBearerAuth()
   @ApiOkResponse({ description: 'Payment done successfully' })
   @Post('payment')
   payment(@Body() paymentDto: PaymentDto, @Req() req: Request) {
@@ -75,7 +72,6 @@ export class SellerController {
 
   @RoleDec(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  @ApiBearerAuth()
   @Post()
   @ApiOkResponse({ description: 'Seller created successfully' })
   create(@Body() createSellerDto: CreateSellerDto) {
@@ -84,7 +80,6 @@ export class SellerController {
 
   @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(AuthGuard, RolesGuard)
-  @ApiBearerAuth()
   @ApiQuery({
     name: 'page',
     required: false,
@@ -127,7 +122,6 @@ export class SellerController {
 
   @RoleDec(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  @ApiBearerAuth()
   @ApiOkResponse({ description: 'Single seller by ID' })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
@@ -136,7 +130,6 @@ export class SellerController {
 
   @RoleDec(Role.ADMIN, Role.SELLER)
   @UseGuards(AuthGuard, RolesGuard)
-  @ApiBearerAuth()
   @ApiOkResponse({ description: 'Seller updated successfully' })
   @Patch(':id')
   update(
@@ -148,7 +141,6 @@ export class SellerController {
 
   @RoleDec(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  @ApiBearerAuth()
   @ApiOkResponse({ description: 'Seller deleted successfully' })
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
