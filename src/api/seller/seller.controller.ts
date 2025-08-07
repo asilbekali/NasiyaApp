@@ -118,8 +118,6 @@ export class SellerController {
     });
   }
 
-  @RoleDec(Role.ADMIN)
-  @UseGuards(AuthGuard, RolesGuard)
   @ApiOkResponse({ description: 'Single seller by ID' })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
