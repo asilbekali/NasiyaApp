@@ -78,8 +78,6 @@ export class SellerController {
     return this.sellerService.create(createSellerDto);
   }
 
-  @RoleDec(Role.ADMIN, Role.SELLER)
-  @UseGuards(AuthGuard, RolesGuard)
   @ApiQuery({
     name: 'page',
     required: false,
