@@ -309,4 +309,37 @@ export class SellerService {
 
     return seller;
   }
+
+  async getAllTotalDebtPrice(sellerId: number) {
+    const debtors = await this.prisma.debtor.findMany({
+      where: { sellerId },
+      include: {
+        borrowedProduct: {
+          select: { totalAmount: true },
+        },
+      },
+    });
+
+    if (!debtors.length) {
+      return {
+        sellerId,
+        totalDebtPrice: 0,
+        message: 'No debtors found for this seller',
+      };
+    }
+
+    // Barcha borrowedProduct totalAmount larini jamlash
+    const totalDebtPrice = debtors.reduce((sum, debtor) => {
+      const debtorSum = debtor.borrowedProduct.reduce(
+        (bpSum, bp) => bpSum + bp.totalAmount,
+        0,
+      );
+      return sum + debtorSum;
+    }, 0);
+
+    return {
+      sellerId,
+      totalDebtPrice,
+    };
+  }
 }

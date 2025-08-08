@@ -19,12 +19,7 @@ import { RolesGuard } from 'src/common/Guards/roles.guard';
 import { RoleDec } from 'src/common/decoratos/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { LoginSellerDto } from './dto/login-seller.dto';
-import {
-  ApiTags,
-  ApiQuery,
-  ApiBearerAuth,
-  ApiOkResponse,
-} from '@nestjs/swagger';
+import { ApiTags, ApiQuery, ApiOkResponse } from '@nestjs/swagger';
 import { PaymentDto } from './dto/payment.dto';
 import { LateDebtor } from './interface/late-debtor.interface';
 
@@ -32,6 +27,17 @@ import { LateDebtor } from './interface/late-debtor.interface';
 @Controller('seller')
 export class SellerController {
   constructor(private readonly sellerService: SellerService) {}
+
+  @RoleDec(Role.SELLER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiOkResponse({
+    description: 'Total debt price for all borrowed products of seller',
+  })
+  @Get('all-total-debt-price')
+  getAllTotalDebtPrice(@Req() req: Request) {
+    const sellerId = req['user'].sub;
+    return this.sellerService.getAllTotalDebtPrice(sellerId);
+  }
 
   @RoleDec(Role.SELLER)
   @UseGuards(AuthGuard, RolesGuard)
