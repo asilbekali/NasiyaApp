@@ -35,6 +35,15 @@ export class SellerController {
 
   @RoleDec(Role.SELLER)
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiOkResponse({ description: 'All dates for current seller' })
+  @Get('dates')
+  getSellerDates(@Req() req: Request) {
+    const sellerId = req['user'].sub;
+    return this.sellerService.getSellerDates(sellerId);
+  }
+
+  @RoleDec(Role.SELLER)
+  @UseGuards(AuthGuard, RolesGuard)
   @ApiOkResponse({ description: 'This month total debts for seller' })
   @Get('month-total')
   thisMonthTotal(@Req() req: Request) {

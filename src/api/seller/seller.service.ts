@@ -297,4 +297,16 @@ export class SellerService {
     await this.prisma.seller.delete({ where: { id } });
     return { message: 'Seller deleted successfully' };
   }
+
+  async getSellerDates(sellerId: number) {
+    const seller = await this.prisma.seller.findFirst({
+      where: { id: sellerId },
+    });
+
+    if (!seller) {
+      throw new NotFoundException(`Seller with id ${sellerId} not found`);
+    }
+
+    return seller;
+  }
 }
