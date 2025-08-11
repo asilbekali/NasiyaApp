@@ -259,7 +259,6 @@ export class SellerService {
     let totalAmount = 0;
 
     const debtorDetails = debtors.map((debtor) => {
-      // Filter out borrowedProducts with totalAmount = 0
       const activeBorrowedProducts = debtor.borrowedProduct.filter(
         (bp) => bp.totalAmount > 0,
       );
@@ -277,6 +276,7 @@ export class SellerService {
         name: debtor.name,
         phoneNumbers,
         totalDebt: debtorTotalDebt,
+        borrowedProducts: activeBorrowedProducts, 
       };
     });
 
