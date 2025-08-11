@@ -276,7 +276,7 @@ export class SellerService {
         name: debtor.name,
         phoneNumbers,
         totalDebt: debtorTotalDebt,
-        borrowedProducts: activeBorrowedProducts, 
+        borrowedProducts: activeBorrowedProducts,
       };
     });
 
@@ -285,10 +285,19 @@ export class SellerService {
       (debtor) => debtor.totalDebt > 0,
     );
 
+    // Barcha borrowedProductlarni bittadan arrayga yig‘amiz, har biriga debtorId ni ham qo‘shamiz
+    const paymentDate = filteredDebtors.flatMap((debtor) =>
+      debtor.borrowedProducts.map((bp) => ({
+        debtorId: debtor.id,
+        paymentDay: bp.createAt,
+      })),
+    );
+
     return {
       sellerId,
       thisMonthDebtorsCount: filteredDebtors.length,
       thisMonthTotalAmount: totalAmount,
+      paymentDate, 
       debtors: filteredDebtors,
     };
   }
