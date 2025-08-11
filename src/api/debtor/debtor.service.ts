@@ -91,6 +91,55 @@ export class DebtorService {
     const debtor = await this.prisma.debtor.findUnique({ where: { id } });
     if (!debtor) throw new NotFoundException(`Debtor with id ${id} not found`);
 
-    return await this.prisma.debtor.delete({ where: { id } });
+    await this.prisma.$transaction(async (tx) => {
+      // 1. Debtor image larini o‘chirish
+      await tx.debtor_image.deleteMany({
+        where: { debtorId: id },
+      });
+
+      // 2. Telefon raqamlarini o‘chirish
+      await tx.debtroPhoneNumber.deleteMany({
+        where: { debtorId: id },
+      });
+
+      // 3. Message larni o‘chirish
+      await tx.message.deleteMany({
+        where: { debtorId: id },
+      });
+
+      // 4. Borrowed product larni olish
+      const borrowedProducts = await tx.borrowedProduct.findMany({
+        where: { debtorId: id },
+        select: { id: true },
+      });
+      const borrowedProductIds = borrowedProducts.map((bp) => bp.id);
+
+      if (borrowedProductIds.length > 0) {
+        // 5. Borrowed product image larini o‘chirish
+        await tx.borrowedProductImage.deleteMany({
+          where: { borrowedProductId: { in: borrowedProductIds } },
+        });
+
+        // 6. Payment history ni o‘chirish
+        await tx.paymentHistory.deleteMany({
+          where: {
+            OR: [
+              { debtorId: id },
+              { borrowedProductId: { in: borrowedProductIds } },
+            ],
+          },
+        });
+
+        // 7. Borrowed product larni o‘chirish
+        await tx.borrowedProduct.deleteMany({
+          where: { id: { in: borrowedProductIds } },
+        });
+      }
+
+      // 8. Oxirida debtor ni o‘chirish
+      await tx.debtor.delete({ where: { id } });
+    });
+
+    return { message: `Debtor with id ${id} and all related data deleted` };
   }
 }
