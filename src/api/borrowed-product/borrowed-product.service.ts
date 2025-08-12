@@ -87,7 +87,11 @@ export class BorrowedProductService {
   async findAll() {
     return await this.prisma.borrowedProduct.findMany({
       include: {
-        debtor: true,
+        debtor: {
+          include: {
+            debtroPhoneNumber: true, // telefon raqamlarini ham qo'shish
+          },
+        },
         borrowedProductImage: true,
         paymentHistory: true,
       },
@@ -98,7 +102,11 @@ export class BorrowedProductService {
     const borrowedProduct = await this.prisma.borrowedProduct.findUnique({
       where: { id },
       include: {
-        debtor: true,
+        debtor: {
+          include: {
+            debtroPhoneNumber: true, // telefon raqamlarini ham qo'shish
+          },
+        },
         borrowedProductImage: true,
         paymentHistory: true,
       },
