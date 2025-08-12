@@ -77,39 +77,39 @@ export class DebtorService {
     return debtor;
   }
 
-  async update(id: number, updateDebtorDto: UpdateDebtorDto) {
-    const debtor = await this.prisma.debtor.findUnique({ where: { id } });
-    if (!debtor) throw new NotFoundException(`Debtor with id ${id} not found`);
+async update(id: number, updateDebtorDto: UpdateDebtorDto) {
+  const debtor = await this.prisma.debtor.findUnique({ where: { id } });
+  if (!debtor) throw new NotFoundException(`Debtor with id ${id} not found`);
 
-    // phoneNumbers ni ajratib olish (dto dan)
-    const { phoneNumbers, ...debtorData } = updateDebtorDto;
+  // DTO dan phoneNumbers ni ajratib olish
+  const { phoneNumbers, ...debtorData } = updateDebtorDto;
 
-    // 1. debtor asosiy malumotlarini yangilash
-    const updatedDebtor = await this.prisma.debtor.update({
-      where: { id },
-      data: debtorData,
+  // 1. debtor jadvalidagi asosiy maydonlarni yangilash
+  const updatedDebtor = await this.prisma.debtor.update({
+    where: { id },
+    data: debtorData,
+  });
+
+  // 2. Agar phoneNumbers bo'lsa, telefon raqamlarini yangilash
+  if (phoneNumbers) {
+    // Avvalgi telefon raqamlarini o'chirish
+    await this.prisma.debtroPhoneNumber.deleteMany({
+      where: { debtorId: id },
     });
 
-    // 2. Telefon raqamlarini yangilash (oddiy usul)
-    if (phoneNumbers) {
-      // Eski raqamlarni o'chirish
-      await this.prisma.debtroPhoneNumber.deleteMany({
-        where: { debtorId: id },
+    // Yangi telefon raqamlarini qo'shish
+    for (const number of phoneNumbers) {
+      await this.prisma.debtroPhoneNumber.create({
+        data: {
+          debtorId: id,
+          number,
+        },
       });
-
-      // Yangi raqamlarni qo'shish
-      for (const number of phoneNumbers) {
-        await this.prisma.debtroPhoneNumber.create({
-          data: {
-            debtorId: id,
-            number,
-          },
-        });
-      }
     }
-
-    return updatedDebtor;
   }
+
+  return updatedDebtor;
+}
 
   async remove(id: number) {
     const debtor = await this.prisma.debtor.findUnique({ where: { id } });

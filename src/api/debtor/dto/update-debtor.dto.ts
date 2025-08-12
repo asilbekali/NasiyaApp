@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateDebtorDto } from './create-debtor.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class UpdateDebtorDto extends PartialType(CreateDebtorDto) {
   @ApiProperty({ example: 'Ali Valiyev', required: false })
@@ -9,10 +9,14 @@ export class UpdateDebtorDto extends PartialType(CreateDebtorDto) {
   @IsString()
   name?: string;
 
-  @ApiProperty({ example: '+998901234567', required: false })
+  @ApiProperty({
+    example: ['+998901234567', '+998901234568'],
+    required: false,
+  })
   @IsOptional()
-  @IsString()
-  phoneNumber?: string;
+  @IsArray()
+  @IsString({ each: true })
+  phoneNumbers?: string[];
 
   @ApiProperty({ example: 'Toshkent, Yunusobod tuman', required: false })
   @IsOptional()
