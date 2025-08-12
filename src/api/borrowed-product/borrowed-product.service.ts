@@ -79,7 +79,7 @@ export class BorrowedProductService {
       include: {
         debtor: true,
         borrowedProductImage: true,
-        paymentHistory: true
+        paymentHistory: true,
       },
     });
   }
@@ -104,12 +104,14 @@ export class BorrowedProductService {
   async update(id: number, dto: UpdateBorrowedProductDto) {
     const existing = await this.prisma.borrowedProduct.findUnique({
       where: { id },
+      include: { borrowedProductImage: true }, // oldingi rasmalarni olish uchun
     });
     if (!existing) {
       throw new NotFoundException(`BorrowedProduct with id ${id} not found`);
     }
 
-    return await this.prisma.borrowedProduct.update({
+    // Asosiy maydonlarni yangilash
+    const updatedBorrowedProduct = await this.prisma.borrowedProduct.update({
       where: { id },
       data: {
         productName: dto.productName ?? existing.productName,
@@ -118,6 +120,31 @@ export class BorrowedProductService {
         note: dto.note ?? existing.note,
         debtorId: dto.debtorId ?? existing.debtorId,
       },
+    });
+
+    // Rasmlar bo'lsa, eskilarini o'chirib, yangilarini qo'shish
+    if (dto.images && dto.images.length > 0) {
+      // 1. Eskilarini o'chirish
+      await this.prisma.borrowedProductImage.deleteMany({
+        where: { borrowedProductId: id },
+      });
+
+      // 2. Yangi rasmlarni yaratish
+      await Promise.all(
+        dto.images.map((imageUrl) =>
+          this.prisma.borrowedProductImage.create({
+            data: {
+              borrowedProductId: id,
+              image: imageUrl,
+            },
+          }),
+        ),
+      );
+    }
+
+    // To‘liq yangilangan ma’lumotni qaytarish
+    return await this.prisma.borrowedProduct.findUnique({
+      where: { id },
       include: {
         debtor: true,
         borrowedProductImage: true,
