@@ -81,10 +81,34 @@ export class DebtorService {
     const debtor = await this.prisma.debtor.findUnique({ where: { id } });
     if (!debtor) throw new NotFoundException(`Debtor with id ${id} not found`);
 
-    return await this.prisma.debtor.update({
+    // phoneNumbers ni ajratib olish (dto dan)
+    const { phoneNumbers, ...debtorData } = updateDebtorDto;
+
+    // 1. debtor asosiy malumotlarini yangilash
+    const updatedDebtor = await this.prisma.debtor.update({
       where: { id },
-      data: updateDebtorDto,
+      data: debtorData,
     });
+
+    // 2. Telefon raqamlarini yangilash (oddiy usul)
+    if (phoneNumbers) {
+      // Eski raqamlarni o'chirish
+      await this.prisma.debtroPhoneNumber.deleteMany({
+        where: { debtorId: id },
+      });
+
+      // Yangi raqamlarni qo'shish
+      for (const number of phoneNumbers) {
+        await this.prisma.debtroPhoneNumber.create({
+          data: {
+            debtorId: id,
+            number,
+          },
+        });
+      }
+    }
+
+    return updatedDebtor;
   }
 
   async remove(id: number) {
