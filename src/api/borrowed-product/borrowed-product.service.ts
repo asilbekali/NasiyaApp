@@ -15,6 +15,7 @@ export class BorrowedProductService {
     const debtor = await this.prisma.debtor.findUnique({
       where: { id: dto.debtorId },
     });
+
     if (!debtor) {
       throw new BadRequestException('Debtor id not found!');
     }
@@ -22,19 +23,28 @@ export class BorrowedProductService {
     const createAt = new Date();
     const termDate = new Date(dto.term);
 
-    if (termDate <= createAt) {
-      throw new BadRequestException('Term date must be in the future');
+    // faqat sanani tekshirish uchun vaqtni 00:00 ga o'rnatish
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    termDate.setHours(0, 0, 0, 0);
+
+    // endi bugungi kunda ham yaratish mumkin
+    if (termDate.getTime() < today.getTime()) {
+      throw new BadRequestException('Term date cannot be in the past');
     }
 
     const monthsDiff =
       (termDate.getFullYear() - createAt.getFullYear()) * 12 +
       (termDate.getMonth() - createAt.getMonth());
 
-    if (monthsDiff <= 0) {
-      throw new BadRequestException('Term difference must be at least 1 month');
+    if (monthsDiff < 0) {
+      throw new BadRequestException('Term difference must be at least 0 month');
     }
 
-    const monthPayment = Math.ceil(dto.totalAmount / monthsDiff);
+    const monthPayment =
+      monthsDiff === 0
+        ? dto.totalAmount // agar bugungi kunda bo‘lsa, to‘liq summa
+        : Math.ceil(dto.totalAmount / monthsDiff);
 
     const borrowedProduct = await this.prisma.borrowedProduct.create({
       data: {
