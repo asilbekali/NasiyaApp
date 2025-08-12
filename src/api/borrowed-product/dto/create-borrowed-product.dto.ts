@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsInt,
-  IsString,
-  IsOptional,
-  IsArray,
-  IsDateString,
-} from 'class-validator';
+import { IsInt, IsString, IsOptional, IsArray } from 'class-validator';
 
 export class CreateBorrowedProductDto {
   @ApiProperty({ example: 'Televizor LG' })
@@ -13,8 +7,8 @@ export class CreateBorrowedProductDto {
   productName: string;
 
   @ApiProperty({ example: '2025-12-31T00:00:00.000Z' })
-  @IsDateString()
-  term: string; 
+  @IsString()
+  term: string;
 
   @ApiProperty({ example: 4000000 })
   @IsInt()
