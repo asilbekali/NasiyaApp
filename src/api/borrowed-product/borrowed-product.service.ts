@@ -11,78 +11,85 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 export class BorrowedProductService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateBorrowedProductDto) {
-    const debtor = await this.prisma.debtor.findUnique({
-      where: { id: dto.debtorId },
-    });
+async create(dto: CreateBorrowedProductDto) {
+  const debtor = await this.prisma.debtor.findUnique({
+    where: { id: dto.debtorId },
+  });
 
-    if (!debtor) {
-      throw new BadRequestException('Debtor id not found!');
-    }
-
-    const createAt = new Date();
-    const termDate = new Date(dto.term);
-
-    // faqat sanani tekshirish uchun vaqtni 00:00 ga o'rnatish
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    termDate.setHours(0, 0, 0, 0);
-
-    // endi bugungi kunda ham yaratish mumkin
-    if (termDate.getTime() < today.getTime()) {
-      throw new BadRequestException('Term date cannot be in the past');
-    }
-
-    const monthsDiff =
-      (termDate.getFullYear() - createAt.getFullYear()) * 12 +
-      (termDate.getMonth() - createAt.getMonth());
-
-    if (monthsDiff < 0) {
-      throw new BadRequestException('Term difference must be at least 0 month');
-    }
-
-    const monthPayment =
-      monthsDiff === 0
-        ? dto.totalAmount // agar bugungi kunda bo‘lsa, to‘liq summa
-        : Math.ceil(dto.totalAmount / monthsDiff);
-
-    const borrowedProduct = await this.prisma.borrowedProduct.create({
-      data: {
-        productName: dto.productName,
-        term: termDate,
-        totalAmount: dto.totalAmount,
-        note: dto.note,
-        debtorId: dto.debtorId,
-        monthPayment,
-      },
-      include: {
-        debtor: true,
-      },
-    });
-
-    if (dto.images && dto.images.length > 0) {
-      await Promise.all(
-        dto.images.map(async (item) => {
-          await this.prisma.borrowedProductImage.create({
-            data: {
-              borrowedProductId: borrowedProduct.id,
-              image: item,
-            },
-          });
-        }),
-      );
-    }
-
-    const fullBorrowedProduct = await this.prisma.borrowedProduct.findUnique({
-      where: { id: borrowedProduct.id },
-      include: {
-        debtor: true,
-        borrowedProductImage: true,
-      },
-    });
-
-    return fullBorrowedProduct;
+  if (!debtor) {
+    throw new BadRequestException('Debtor id not found!');
   }
+
+  const startDate = new Date(); // yaratish vaqti
+  const termDate = new Date(dto.term); // berilgan muddat
+
+  // Faqat sanani tekshirish uchun vaqtni 00:00 ga o‘rnatish
+  startDate.setHours(0, 0, 0, 0);
+  termDate.setHours(0, 0, 0, 0);
+
+  // Orqaga sanalarni bloklash
+  if (termDate.getTime() < startDate.getTime()) {
+    throw new BadRequestException('Term date cannot be in the past');
+  }
+
+  // Oylar farqini hisoblash
+  let monthsDiff =
+    (termDate.getFullYear() - startDate.getFullYear()) * 12 +
+    (termDate.getMonth() - startDate.getMonth());
+
+  // Kunlar farqini hisoblash va qo‘shimcha oy qo‘shish
+  if (termDate.getDate() >= startDate.getDate()) {
+    monthsDiff += 1;
+  }
+
+  if (monthsDiff <= 0) {
+    throw new BadRequestException('Term difference must be at least 1 month');
+  }
+
+  // Oylik to‘lovni hisoblash
+  const monthPayment = Math.ceil(dto.totalAmount / monthsDiff);
+
+  // Borrowed product yaratish
+  const borrowedProduct = await this.prisma.borrowedProduct.create({
+    data: {
+      productName: dto.productName,
+      term: termDate,
+      totalAmount: dto.totalAmount,
+      note: dto.note,
+      debtorId: dto.debtorId,
+      monthPayment,
+    },
+    include: {
+      debtor: true,
+    },
+  });
+
+  // Rasmlarni qo‘shish
+  if (dto.images && dto.images.length > 0) {
+    await Promise.all(
+      dto.images.map(async (item) => {
+        await this.prisma.borrowedProductImage.create({
+          data: {
+            borrowedProductId: borrowedProduct.id,
+            image: item,
+          },
+        });
+      }),
+    );
+  }
+
+  // To‘liq ma’lumotni qaytarish
+  const fullBorrowedProduct = await this.prisma.borrowedProduct.findUnique({
+    where: { id: borrowedProduct.id },
+    include: {
+      debtor: true,
+      borrowedProductImage: true,
+    },
+  });
+
+  return fullBorrowedProduct;
+}
+
 
   async findAll() {
     return await this.prisma.borrowedProduct.findMany({
