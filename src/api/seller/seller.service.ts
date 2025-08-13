@@ -241,7 +241,7 @@ async thisMonthTotal(sellerId: number) {
       borrowedProduct: {
         select: {
           monthPayment: true,
-          term: true,
+          term: true, // term kun bo‘lishi uchun kerak
           createAt: true,
           totalAmount: true,
         },
@@ -281,17 +281,16 @@ async thisMonthTotal(sellerId: number) {
     };
   });
 
-  // Debtors with no active debts (0 sum) will be excluded
+  // Faqat qarzdorlar qoldirildi
   const filteredDebtors = debtorDetails.filter(
     (debtor) => debtor.totalDebt > 0,
   );
 
-  // paymentDate ichiga term qo‘shilgan
+  // paymentDay endi termdagi kun
   const paymentDate = filteredDebtors.flatMap((debtor) =>
     debtor.borrowedProducts.map((bp) => ({
       debtorId: debtor.id,
-      paymentDay: bp.createAt,
-      term: bp.term,
+      paymentDay: bp.term, // term kun bo‘lib qo‘yildi
     })),
   );
 
@@ -303,6 +302,7 @@ async thisMonthTotal(sellerId: number) {
     debtors: filteredDebtors,
   };
 }
+
 
 
   async remove(id: number) {
