@@ -30,6 +30,15 @@ export class SellerController {
 
   @RoleDec(Role.SELLER)
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiOkResponse({ description: 'Current seller profile' })
+  @Get('profile')
+  getMyProfile(@Req() req: Request) {
+    const sellerId = req['user'].sub;
+    return this.sellerService.getMyProfile(sellerId);
+  }
+
+  @RoleDec(Role.SELLER)
+  @UseGuards(AuthGuard, RolesGuard)
   @ApiOkResponse({
     description: 'Total debt price for all borrowed products of seller',
   })

@@ -354,4 +354,31 @@ async thisMonthTotal(sellerId: number) {
       totalDebtPrice,
     };
   }
+
+
+  async getMyProfile(sellerId: number) {
+  const seller = await this.prisma.seller.findUnique({
+    where: { id: sellerId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phoneNumber: true,
+      wallet: true,
+      image: true,
+      status: true,
+      createAt: true,
+    },
+  });
+
+  if (!seller) {
+    throw new NotFoundException('Seller not found');
+  }
+
+  return {
+    message: 'Seller profile retrieved successfully',
+    seller,
+  };
+}
+
 }
