@@ -225,82 +225,85 @@ export class SellerService {
     };
   }
 
-  async thisMonthTotal(sellerId: number) {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+async thisMonthTotal(sellerId: number) {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const debtors = await this.prisma.debtor.findMany({
-      where: {
-        sellerId,
-        createAt: {
-          gte: startOfMonth,
-          lte: now,
+  const debtors = await this.prisma.debtor.findMany({
+    where: {
+      sellerId,
+      createAt: {
+        gte: startOfMonth,
+        lte: now,
+      },
+    },
+    include: {
+      borrowedProduct: {
+        select: {
+          monthPayment: true,
+          term: true,
+          createAt: true,
+          totalAmount: true,
         },
       },
-      include: {
-        borrowedProduct: {
-          select: {
-            monthPayment: true,
-            createAt: true,
-            totalAmount: true,
-          },
-        },
-        debtroPhoneNumber: {
-          select: {
-            number: true,
-          },
+      debtroPhoneNumber: {
+        select: {
+          number: true,
         },
       },
-      orderBy: {
-        createAt: 'desc',
-      },
-    });
+    },
+    orderBy: {
+      createAt: 'desc',
+    },
+  });
 
-    let totalAmount = 0;
+  let totalAmount = 0;
 
-    const debtorDetails = debtors.map((debtor) => {
-      const activeBorrowedProducts = debtor.borrowedProduct.filter(
-        (bp) => bp.totalAmount > 0,
-      );
-
-      const debtorTotalDebt = activeBorrowedProducts.reduce(
-        (sum, bp) => sum + bp.monthPayment,
-        0,
-      );
-      totalAmount += debtorTotalDebt;
-
-      const phoneNumbers = debtor.debtroPhoneNumber.map((pn) => pn.number);
-
-      return {
-        id: debtor.id,
-        name: debtor.name,
-        phoneNumbers,
-        totalDebt: debtorTotalDebt,
-        borrowedProducts: activeBorrowedProducts,
-      };
-    });
-
-    // Debtors with no active debts (0 sum) will be excluded
-    const filteredDebtors = debtorDetails.filter(
-      (debtor) => debtor.totalDebt > 0,
+  const debtorDetails = debtors.map((debtor) => {
+    const activeBorrowedProducts = debtor.borrowedProduct.filter(
+      (bp) => bp.totalAmount > 0,
     );
 
-    // Barcha borrowedProductlarni bittadan arrayga yig‘amiz, har biriga debtorId ni ham qo‘shamiz
-    const paymentDate = filteredDebtors.flatMap((debtor) =>
-      debtor.borrowedProducts.map((bp) => ({
-        debtorId: debtor.id,
-        paymentDay: bp.createAt,
-      })),
+    const debtorTotalDebt = activeBorrowedProducts.reduce(
+      (sum, bp) => sum + bp.monthPayment,
+      0,
     );
+    totalAmount += debtorTotalDebt;
+
+    const phoneNumbers = debtor.debtroPhoneNumber.map((pn) => pn.number);
 
     return {
-      sellerId,
-      thisMonthDebtorsCount: filteredDebtors.length,
-      thisMonthTotalAmount: totalAmount,
-      paymentDate, 
-      debtors: filteredDebtors,
+      id: debtor.id,
+      name: debtor.name,
+      phoneNumbers,
+      totalDebt: debtorTotalDebt,
+      borrowedProducts: activeBorrowedProducts,
     };
-  }
+  });
+
+  // Debtors with no active debts (0 sum) will be excluded
+  const filteredDebtors = debtorDetails.filter(
+    (debtor) => debtor.totalDebt > 0,
+  );
+
+  // paymentDate ichiga term qo‘shilgan
+  const paymentDate = filteredDebtors.flatMap((debtor) =>
+    debtor.borrowedProducts.map((bp) => ({
+      debtorId: debtor.id,
+      paymentDay: bp.createAt,
+      term: bp.term,
+    })),
+  );
+
+  return {
+    sellerId,
+    thisMonthDebtorsCount: filteredDebtors.length,
+    thisMonthTotalAmount: totalAmount,
+    paymentDate,
+    debtors: filteredDebtors,
+  };
+}
+
 
   async remove(id: number) {
     await this.prisma.seller.delete({ where: { id } });
