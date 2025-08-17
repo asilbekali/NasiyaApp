@@ -76,6 +76,7 @@ export class PaymentSectionService {
       };
     }
   }
+  
   async payAsYouWish(dto: PayAsYouWishDto, SellerId: number) {
     const borrowedProduct = await this.prisma.borrowedProduct.findUnique({
       where: { id: dto.borrowedProductId },
