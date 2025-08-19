@@ -6,6 +6,7 @@ import {
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { CreateMessageDto } from './dto/create-sen-message-debtor.dto';
 import { UpdateSenMessageDebtorDto } from './dto/update-sen-message-debtor.dto';
+import { MailService } from 'src/common/mail/mail.service';
 
 @Injectable()
 export class SenMessageDebtorService {
